@@ -33,7 +33,7 @@ const eventHandler = (data)=>{
         case eventTypes.peer:
             console.log(data);
             let searchPeer = liveClients[data.peer];
-
+            console.log(searchPeer);
             if(searchPeer){
                 server.send(JSON.stringify(
                     { ok : true, message : "Peer Details", body : { id : data.peer, ...searchPeer } }
