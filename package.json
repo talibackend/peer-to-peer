@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "dgram": "^1.0.1",
+    "nat-pmp": "^1.0.0",
+    "node-portmapping": "^0.3.3"
+  },
+  "scripts": {
+    "middleman": "nodemon middleman.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
