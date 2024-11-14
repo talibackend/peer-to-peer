@@ -1,8 +1,6 @@
 {
   "dependencies": {
-    "dgram": "^1.0.1",
-    "nat-pmp": "^1.0.0",
-    "node-portmapping": "^0.3.3"
+    "dgram": "^1.0.1"
   },
   "scripts": {
     "middleman": "nodemon middleman.js"
