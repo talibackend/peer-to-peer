@@ -30,6 +30,7 @@ const eventHandler = (data)=>{
         case eventTypes.ping:
             saveNewConnection(data);
         case eventTypes.peer:
+            console.log(data);
             let searchPeer = liveClients[data.peer];
 
             if(searchPeer){
