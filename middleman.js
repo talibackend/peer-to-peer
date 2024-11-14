@@ -31,13 +31,11 @@ const eventHandler = (data)=>{
             saveNewConnection(data);
             break;
         case eventTypes.peer:
-            console.log(data);
             let searchPeer = liveClients[data.peer];
-            console.log(searchPeer);
             if(searchPeer){
                 server.send(JSON.stringify(
                     { ok : true, message : "Peer Details", body : { id : data.peer, ...searchPeer } }
-                ), data.port, data.ip);
+                ), data.port, data.address);
             }
             break;
         default:
