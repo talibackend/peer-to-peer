@@ -29,6 +29,7 @@ const eventHandler = (data)=>{
     switch(data.event_type){
         case eventTypes.ping:
             saveNewConnection(data);
+            break;
         case eventTypes.peer:
             console.log(data);
             let searchPeer = liveClients[data.peer];
@@ -38,6 +39,7 @@ const eventHandler = (data)=>{
                     { ok : true, message : "Peer Details", body : { id : data.peer, ...searchPeer } }
                 ), data.port, data.ip);
             }
+            break;
         default:
             return;
     }
