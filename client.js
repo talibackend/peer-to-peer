@@ -19,7 +19,7 @@ let peerId;
 let peerIp;
 let peerPort;
 
-let remainingPeerRequest = 500;
+let remainingPingRequest = 500;
 
 const lineReader = async (question) =>{
     return await new Promise((resolve, reject)=>{
@@ -54,13 +54,10 @@ const main = async ()=>{
         
         await pingMiddleman();
 
-        // peerId = await lineReader("What is the peer id? ");
+        peerId = await lineReader("What is the peer id? ");
 
-        // while(pinged && !peerIp){
-        //     setTimeout(()=>{
-        //         socket.send(JSON.stringify({ event_type : eventTypes.peer, peer : peerId }));
-        //     }, 2000);
-        // }
+        await getPeerFromMiddleman();
+        await sendMessageToPeer();
 
     }catch(error){
         console.log(error);
@@ -78,7 +75,10 @@ const processMessage = (msg, rinfo)=>{
                 case eventTypes.ping:
                     pinged = true;
                     break;
-            
+                case eventTypes.peer:
+                    peerIp = msg.body.ip;
+                    peerPort = msg.body.port;
+                    break;
                 default:
                     break;
             }
@@ -91,17 +91,47 @@ const processMessage = (msg, rinfo)=>{
 
 const pingMiddleman = async ()=>{
     return await new Promise((resolve, reject)=>{
+        if(remainingPingRequest < 0){
+            reject("Failed to ping middleman server.");
+        }
         socket.send(JSON.stringify({ event_type : "ping", id : myId }), middlemanPort, middlemanIp);
         let timeout = setTimeout(async ()=>{
             if(!pinged){
                 console.log("==> Ping middleman again...");
+                remainingPingRequest -= 1;
                 return await pingMiddleman();
             }
 
             clearTimeout(timeout);
+            remainingPingRequest = 500;
             resolve(true);
         }, 5000);
     })
+}
+
+const getPeerFromMiddleman = async ()=>{
+    return await new Promise((resolve, reject)=>{
+        socket.send(JSON.stringify({ event_type : "peer", peer : peerId }), middlemanPort, middlemanIp);
+        
+        let timeout = setTimeout(async ()=>{
+            if(!peerPort || !peerIp){
+                console.log("==> Trying to get peer details again...");
+                return await getPeerFromMiddleman();
+            }
+
+            clearTimeout(timeout);
+            resolve(true);
+        }, 2000);
+    })
+}
+
+const sendMessageToPeer = async ()=>{
+    let message = await lineReader(`Enter message to send to user ${peerId}: `);
+    socket.send(JSON.stringify({ event_type : "peer_message", peer : myId, message }), peerPort, peerIp);
+
+    setTimeout(async ()=>{
+        return await sendMessageToPeer();
+    }, 1000);
 }
 
 main();
