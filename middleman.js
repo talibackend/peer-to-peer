@@ -18,7 +18,7 @@ const saveNewConnection = (data)=>{
             port : data.port
         }
         server.send(JSON.stringify(
-            { ok : true, message : "Connection saved" },
+            { event_type : eventTypes.ping, ok : true, message : "Connection saved" },
         ), data.port, data.address);
     }
 
@@ -34,7 +34,7 @@ const eventHandler = (data)=>{
             let searchPeer = liveClients[data.peer];
             if(searchPeer){
                 server.send(JSON.stringify(
-                    { ok : true, message : "Peer Details", body : { id : data.peer, ...searchPeer } }
+                    { event_type : eventTypes.peer, ok : true, message : "Peer Details", body : { id : data.peer, ...searchPeer } }
                 ), data.port, data.address);
             }
             break;
