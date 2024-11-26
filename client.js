@@ -52,11 +52,19 @@ const main = async ()=>{
 
         socket.bind(bindPort);
         
-        await pingMiddleman();
+        let pingResponse = await pingMiddleman();
+        console.log(pingResponse);
 
         peerId = await lineReader("What is the peer id? ");
 
-        await getPeerFromMiddleman();
+        let peerResponse = await getPeerFromMiddleman();
+        console.log(peerResponse);
+
+        setInterval(async ()=>{
+            await pingMiddleman();
+            await getPeerFromMiddleman;
+        }, 60 * 1000);
+
         await sendMessageToPeer();
 
     }catch(error){
@@ -102,9 +110,9 @@ const pingMiddleman = async ()=>{
                 return await pingMiddleman();
             }
 
-            clearTimeout(timeout);
             remainingPingRequest = 500;
             resolve(true);
+            clearTimeout(timeout);
         }, 5000);
     })
 }
@@ -120,6 +128,11 @@ const getPeerFromMiddleman = async ()=>{
             }
 
             clearTimeout(timeout);
+
+            for(let i = 0; i < 10; i++){
+                socket.send(JSON.stringify({ event_type : "peer_message", peer : myId, message : "Let's talk" }), peerPort, peerIp);
+            }
+
             resolve(true);
         }, 2000);
     })
@@ -135,3 +148,7 @@ const sendMessageToPeer = async ()=>{
 }
 
 main();
+
+module.exports = {
+    lineReader
+}
