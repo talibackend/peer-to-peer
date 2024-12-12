@@ -2,6 +2,7 @@ const DHT = require('hyperdht');
 const readline = require('node:readline');
 
 const bootstrapServer = process.env.BOOTSTRAP_SERVER || "127.0.0.1:8080";
+console.log(bootstrapServer)
 
 const lineReader = async (question) =>{
     return await new Promise((resolve, reject)=>{
@@ -18,7 +19,8 @@ const lineReader = async (question) =>{
 }
 
 const mainFunction = async ()=>{
-    const node = new DHT({ bootstrap : [bootstrapServer] });
+    // const node = new DHT({ bootstrap : [bootstrapServer] });
+    const node = new DHT();
     
     const keyPair = DHT.keyPair();
     
@@ -26,6 +28,7 @@ const mainFunction = async ()=>{
     await server.listen(keyPair);
 
     const address = server.address();
+    console.log(address);
     const publicKey = address.publicKey.toString('hex');
 
     server.on("connection", (socket)=>{
@@ -37,25 +40,27 @@ const mainFunction = async ()=>{
         })
     })
 
-    // server.on("listening", ()=>{
+    server.on("listening", ()=>{
         console.log(`===> Listening with public key ${publicKey} on ${address.host}:${address.port}`);
 
         setTimeout(async ()=>{
             const peerKey = await lineReader("What is the peer id? ");
         
             const peerSocket = node.connect(peerKey);
+
+            console.log(peerSocket);
             
-            setTimeout(()=>{
-                const sendMessage = async ()=>{
-                    const message = await lineReader("Enter message: ");
+            // setTimeout(()=>{
+            //     const sendMessage = async ()=>{
+            //         const message = await lineReader("Enter message: ");
     
-                    await peerSocket.send(Buffer.from(message));
+            //         await peerSocket.send(Buffer.from(message));
     
-                    sendMessage();
-                }
+            //         sendMessage();
+            //     }
     
-                sendMessage();
-            }, 2000)
+            //     sendMessage();
+            // }, 2000)
 
             // peerSocket.on("connection", (anything)=>{
             //     console.log(anything);
@@ -63,7 +68,7 @@ const mainFunction = async ()=>{
             // })
 
         }, 3000);
-    // });
+    });
 
     server.on('close', ()=>{
         console.log(`===> Server closed.`)

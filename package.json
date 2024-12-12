@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "dgram": "^1.0.1",
+    "dht-rpc": "^6.16.0",
     "hyperdht": "^6.20.1",
     "node-stun": "^0.1.2"
   },
